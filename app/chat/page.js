@@ -333,7 +333,7 @@ export default function AboutUs() {
             >
               <div className="mb-6 h-32 w-32 overflow-hidden rounded-full border-4 border-indigo-100">
                 <Image
-                  src="/a2.jpg"
+                  src="/a3.jpg"
                   alt="Akruti Yadav"
                   width={128}
                   height={128}
