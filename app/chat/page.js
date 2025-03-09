@@ -279,7 +279,7 @@ export default function AboutUs() {
             >
               <div className="mb-6 h-32 w-32 overflow-hidden rounded-full border-4 border-indigo-100">
                 <Image
-                  src="/aditya.jpg"
+                  src="/Aditya.jpg"
                   alt="Aditya Upadhyay"
                   width={128}
                   height={128}

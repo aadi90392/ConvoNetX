@@ -365,7 +365,7 @@ export default function AdityaPortfolio() {
                   <div className="absolute -inset-4 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 opacity-30 blur-xl"></div>
                   <div className="relative rounded-2xl overflow-hidden border-2 border-indigo-100 dark:border-indigo-900 shadow-2xl">
                     <img
-                      src="/placeholder.svg?height=600&width=600"
+                      src="/kjkj.jpg"
                       alt="Aditya working"
                       className="w-full h-full object-cover"
                     />
