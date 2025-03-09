@@ -5,9 +5,9 @@ import { useCreateChatClient, Chat, Channel, ChannelHeader, MessageInput, Messag
 import 'stream-chat-react/dist/css/v2/index.css';
 
 const apiKey = 'dz5f4d5kzrue';
-const userId = 'blue-king-5';
-const userName = 'blue';
-const userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYmx1ZS1raW5nLTUiLCJleHAiOjE3NDE0NjU5ODB9.QYlSyNYKunI8KdYGJHbTOeT5aecB9GpC7d9DH-sH1yY';  
+const userId = 'broad-frost-1';
+const userName = 'broad';
+const userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYnJvYWQtZnJvc3QtMSIsImV4cCI6MTc0MTUyNDI5OH0.N8zSKduAzfgdBSAiz0l0KmtrDnnWmbejQMyOgrA8iPo';
 
 const user  = {
   id: userId,
