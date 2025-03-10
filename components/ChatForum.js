@@ -44,7 +44,7 @@ export default  function ChatForum() {
           <ChannelHeader />
           <MessageList />
           <MessageInput />
-        </Window>
+        </Window> 
         <Thread />
       </Channel>
     </Chat>
