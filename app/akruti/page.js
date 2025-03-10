@@ -263,13 +263,13 @@ export default function AkrutiPortfolio() {
                   tech: ["React", "Node.js", "MongoDB", "AWS"],
                 },
                 {
-                  img: "pos.png",
+                  img: "unique.jpg",
                   title: "API Development",
                   desc: "Designed and implemented robust RESTful APIs for seamless data integration.",
                   tech: ["Java", "Spring Boot", "PostgreSQL", "Swagger"],
                 },
                 {
-                  img: "projt-.png",
+                  img: "mobile.jpg",
                   title: "Mobile Application Development",
                   desc: "Built a cross-platform mobile application with React Native, ensuring a consistent user experience.",
                   tech: ["React Native", "Firebase", "Redux", "GraphQL"],
