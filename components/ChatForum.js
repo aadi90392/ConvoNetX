@@ -5,9 +5,9 @@ import { useCreateChatClient, Chat, Channel, ChannelHeader, MessageInput, Messag
 import 'stream-chat-react/dist/css/v2/index.css';
 
 const apiKey = 'dz5f4d5kzrue';
-const userId = 'soft-mouse-3';
-const userName = 'soft';
-const userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoic29mdC1tb3VzZS0zIiwiZXhwIjoxNzQxNjg4ODM1fQ.XOXcZ60Wn4B36Ndgeo21hGLFjMwE4nck6g3XyeW0qc4';
+const userId = 'spring-bar-5';
+const userName = 'spring';
+const userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoic3ByaW5nLWJhci01IiwiZXhwIjoxNzQxNzIyNzEwfQ.lDnw_p6JETqTL6Za2CZZVTe1ztSWoBdbdxNcSC1UqlY';
 const user  = {
   id: userId,
   name: userName,

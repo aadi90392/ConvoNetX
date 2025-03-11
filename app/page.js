@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion"
+import Link from "next/link"
 import {
   MessageSquare,
   Code,
@@ -72,7 +73,7 @@ const FeatureCard = ({ icon: Icon, title, description, index }) => {
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="relative p-8 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/10 hover:border-violet-500/30 transition-all duration-300 group"
+      className="relative p-6 sm:p-8 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/10 hover:border-violet-500/30 transition-all duration-300 group"
     >
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-violet-600/5 to-indigo-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-br from-violet-600/20 to-indigo-600/20 opacity-0 blur-xl group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -103,7 +104,7 @@ const TestimonialCard = ({ name, role, company, quote, avatar, index }) => {
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="p-8 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/10 relative overflow-hidden"
+      className="p-6 sm:p-8 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/10 relative overflow-hidden"
     >
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-600 to-indigo-600"></div>
       <div className="flex items-start gap-4">
@@ -137,7 +138,7 @@ const PricingCard = ({ title, price, features, isPopular, index }) => {
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className={`relative p-8 rounded-2xl ${
+      className={`relative p-6 sm:p-8 rounded-2xl ${
         isPopular
           ? "bg-gradient-to-br from-violet-900/40 to-indigo-900/40 border-2 border-violet-500/50"
           : "bg-white/[0.03] border border-white/10"
@@ -167,7 +168,8 @@ const PricingCard = ({ title, price, features, isPopular, index }) => {
         ))}
       </ul>
 
-      <button
+      <Link
+        href="/forums"
         className={`w-full py-3 px-6 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
           isPopular
             ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:shadow-lg hover:shadow-violet-500/20"
@@ -176,7 +178,7 @@ const PricingCard = ({ title, price, features, isPopular, index }) => {
       >
         Get Started
         <ChevronRight className="h-4 w-4" />
-      </button>
+      </Link>
     </motion.div>
   )
 }
@@ -249,10 +251,10 @@ export default function Home() {
         {/* Hero Section */}
         <section
           ref={heroRef}
-          className="min-h-screen flex flex-col justify-center relative overflow-hidden px-6 py-24 lg:py-32"
+          className="min-h-screen flex flex-col justify-center relative overflow-hidden px-4 sm:px-6 py-16 sm:py-24 lg:py-32"
         >
           <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 items-center">
               <div>
                 <AnimatePresence>
                   {heroInView && (
@@ -272,7 +274,7 @@ export default function Home() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.1 }}
-                        className="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight"
+                        className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold mb-6 leading-tight"
                       >
                         <GradientText>ConvoNetX</GradientText>
                         <br />
@@ -283,7 +285,7 @@ export default function Home() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.2 }}
-                        className="text-xl text-gray-300 mb-8 max-w-lg"
+                        className="text-lg sm:text-xl text-gray-300 mb-8 max-w-lg"
                       >
                         Join a thriving ecosystem where developers connect, collaborate, and build the future through
                         specialized language forums and real-time collaboration.
@@ -295,17 +297,20 @@ export default function Home() {
                         transition={{ duration: 0.5, delay: 0.3 }}
                         className="flex flex-col sm:flex-row gap-4"
                       >
-                      
-                        <button className="px-8 py-4 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-medium hover:shadow-lg hover:shadow-violet-500/25 transition-all flex items-center justify-center gap-2 group">
+                        <Link
+                            href="/forums"
+                          className="px-6 sm:px-8 py-3 sm:py-4 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-medium hover:shadow-lg hover:shadow-violet-500/25 transition-all flex items-center justify-center gap-2 group"
+                        >
                           Get Started
-                          
                           <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                        
-                        </button>
-                        
-                        <button className="px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium transition-all">
-                          Explore Forums
-                        </button>
+                        </Link>
+
+                        <Link
+                          href="/chat"
+                          className="px-6 sm:px-8 py-3 sm:py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium transition-all"
+                        >
+                         Read More
+                        </Link>
                       </motion.div>
                     </>
                   )}
@@ -472,32 +477,32 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={heroInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.5 }}
-              className="mt-24 text-center"
+              className="mt-16 sm:mt-24 text-center"
             >
-              <p className="text-sm text-gray-400 mb-8">TRUSTED BY DEVELOPERS FROM</p>
-              <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-70">
+              <p className="text-sm text-gray-400 mb-6 sm:mb-8">TRUSTED BY DEVELOPERS FROM</p>
+              <div className="flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-16 opacity-70">
                 <div className="h-8 flex items-center">
-                  <svg viewBox="0 0 124 24" fill="currentColor" className="h-6 text-gray-400">
+                  <svg viewBox="0 0 124 24" fill="currentColor" className="h-5 sm:h-6 text-gray-400">
                     <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm0 2c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12 6.5 2 12 2zm-1.9 5v2H7.5v2h2.6v6H7.5v2h7v-2h-2.6V9h2.6V7h-4.4zm7.9 0v12h2V7h-2z" />
                   </svg>
                 </div>
                 <div className="h-8 flex items-center">
-                  <svg viewBox="0 0 124 24" fill="currentColor" className="h-6 text-gray-400">
+                  <svg viewBox="0 0 124 24" fill="currentColor" className="h-5 sm:h-6 text-gray-400">
                     <path d="M20.5 2l-5.3 19H17l5.3-19h-1.8zm-9.6 0L5.6 21H3.9L9.1 2h1.8zM22.2 2l-5.3 19h-1.7l5.3-19h1.7zM12.9 2L7.7 21H6l5.3-19h1.6zm9.3 0L16.9 21h-1.8l5.3-19h1.8zM4.7 2l5.3 19H8.2L2.9 2h1.8zm9.6 0l-5.3 19H7.3l5.3-19h1.7zm9.3 0l-5.3 19h-1.7l5.3-19h1.7zM2 2l5.3 19H5.6L.3 2H2z" />
                   </svg>
                 </div>
                 <div className="h-8 flex items-center">
-                  <svg viewBox="0 0 124 24" fill="currentColor" className="h-5 text-gray-400">
+                  <svg viewBox="0 0 124 24" fill="currentColor" className="h-4 sm:h-5 text-gray-400">
                     <path d="M24 5.6c-.9.4-1.8.7-2.8.8 1-.6 1.8-1.6 2.2-2.7-1 .6-2 1-3.1 1.2-.9-1-2.2-1.6-3.6-1.6-2.7 0-4.9 2.2-4.9 4.9 0 .4 0 .8.1 1.1-4.1-.2-7.7-2.2-10.1-5.1-.4.7-.7 1.6-.7 2.5 0 1.7.9 3.2 2.2 4.1-.8 0-1.6-.2-2.2-.6v.1c0 2.4 1.7 4.4 3.9 4.8-.4.1-.8.2-1.3.2-.3 0-.6 0-.9-.1.6 2 2.4 3.4 4.6 3.4-1.7 1.3-3.8 2.1-6.1 2.1-.4 0-.8 0-1.2-.1 2.2 1.4 4.8 2.2 7.5 2.2 9.1 0 14-7.5 14-14v-.6c1-.7 1.8-1.6 2.5-2.5z" />
                   </svg>
                 </div>
                 <div className="h-8 flex items-center">
-                  <svg viewBox="0 0 124 24" fill="currentColor" className="h-6 text-gray-400">
+                  <svg viewBox="0 0 124 24" fill="currentColor" className="h-5 sm:h-6 text-gray-400">
                     <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm3.6 14.4c0 1.3-1.1 2.4-2.4 2.4H8.4c-1.3 0-2.4-1.1-2.4-2.4V9.6c0-1.3 1.1-2.4 2.4-2.4h4.8c1.3 0 2.4 1.1 2.4 2.4v4.8z" />
                   </svg>
                 </div>
                 <div className="h-8 flex items-center">
-                  <svg viewBox="0 0 124 24" fill="currentColor" className="h-6 text-gray-400">
+                  <svg viewBox="0 0 124 24" fill="currentColor" className="h-5 sm:h-6 text-gray-400">
                     <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.2 14.8L11.5 19V5l5.7 4.2-5.7 4.2 5.7 1.4z" />
                   </svg>
                 </div>
@@ -507,28 +512,28 @@ export default function Home() {
         </section>
 
         {/* Stats Section */}
-        <section className="py-24 px-6">
+        <section className="py-16 sm:py-24 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
               <div
                 ref={userCountRef}
-                className="p-8 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/10 text-center"
+                className="p-6 sm:p-8 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/10 text-center"
               >
-                <div className="text-4xl font-bold text-white mb-2">{userCount.toLocaleString()}+</div>
+                <div className="text-3xl sm:text-4xl font-bold text-white mb-2">{userCount.toLocaleString()}+</div>
                 <div className="text-gray-400">Active Developers</div>
               </div>
               <div
                 ref={messageCountRef}
-                className="p-8 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/10 text-center"
+                className="p-6 sm:p-8 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/10 text-center"
               >
-                <div className="text-4xl font-bold text-white mb-2">{messageCount.toLocaleString()}+</div>
+                <div className="text-3xl sm:text-4xl font-bold text-white mb-2">{messageCount.toLocaleString()}+</div>
                 <div className="text-gray-400">Messages Exchanged</div>
               </div>
               <div
                 ref={forumCountRef}
-                className="p-8 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/10 text-center"
+                className="p-6 sm:p-8 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/10 text-center sm:col-span-2 md:col-span-1"
               >
-                <div className="text-4xl font-bold text-white mb-2">{forumCount}+</div>
+                <div className="text-3xl sm:text-4xl font-bold text-white mb-2">{forumCount}+</div>
                 <div className="text-gray-400">Specialized Forums</div>
               </div>
             </div>
@@ -536,15 +541,15 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section className="py-24 px-6">
+        <section className="py-16 sm:py-24 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-12 sm:mb-16">
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
                 viewport={{ once: true, margin: "-100px" }}
-                className="text-4xl font-bold mb-4"
+                className="text-3xl sm:text-4xl font-bold mb-4"
               >
                 <GradientText>Powerful Features</GradientText> for Developers
               </motion.h2>
@@ -553,13 +558,13 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
                 viewport={{ once: true, margin: "-100px" }}
-                className="text-xl text-gray-400 max-w-2xl mx-auto"
+                className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto"
               >
                 Everything you need to connect, share knowledge, and build together
               </motion.p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               <FeatureCard
                 icon={Code}
                 title="Language-Specific Forums"
@@ -601,20 +606,20 @@ export default function Home() {
         </section>
 
         {/* Testimonials Section */}
-        <section className="py-24 px-6 relative overflow-hidden">
+        <section className="py-16 sm:py-24 px-4 sm:px-6 relative overflow-hidden">
           <motion.div
             style={{ y: y2 }}
             className="absolute -top-[300px] -right-[300px] w-[600px] h-[600px] bg-violet-600/10 rounded-full blur-[120px] opacity-30"
           ></motion.div>
 
           <div className="max-w-7xl mx-auto relative">
-            <div className="text-center mb-16">
+            <div className="text-center mb-12 sm:mb-16">
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
                 viewport={{ once: true, margin: "-100px" }}
-                className="text-4xl font-bold mb-4"
+                className="text-3xl sm:text-4xl font-bold mb-4"
               >
                 What <GradientText>Developers</GradientText> Are Saying
               </motion.h2>
@@ -623,13 +628,13 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
                 viewport={{ once: true, margin: "-100px" }}
-                className="text-xl text-gray-400 max-w-2xl mx-auto"
+                className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto"
               >
                 Join thousands of satisfied developers in our community
               </motion.p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               <TestimonialCard
                 name="Nikant Yadav"
                 role="Senior Developer"
@@ -659,15 +664,15 @@ export default function Home() {
         </section>
 
         {/* Pricing Section */}
-        <section className="py-24 px-6">
+        <section className="py-16 sm:py-24 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-12 sm:mb-16">
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
                 viewport={{ once: true, margin: "-100px" }}
-                className="text-4xl font-bold mb-4"
+                className="text-3xl sm:text-4xl font-bold mb-4"
               >
                 Simple, <GradientText>Transparent</GradientText> Pricing
               </motion.h2>
@@ -676,13 +681,13 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
                 viewport={{ once: true, margin: "-100px" }}
-                className="text-xl text-gray-400 max-w-2xl mx-auto"
+                className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto"
               >
                 Choose the plan that's right for you or your team
               </motion.p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
               <PricingCard
                 title="Starter"
                 price="$9"
@@ -730,35 +735,38 @@ export default function Home() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-24 px-6">
+        <section className="py-16 sm:py-24 px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true, margin: "-100px" }}
-            className="max-w-4xl mx-auto text-center p-12 rounded-3xl bg-gradient-to-br from-violet-900/40 to-indigo-900/40 border border-violet-500/30 backdrop-blur-sm relative overflow-hidden"
+            className="max-w-4xl mx-auto text-center p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-violet-900/40 to-indigo-900/40 border border-violet-500/30 backdrop-blur-sm relative overflow-hidden"
           >
             {/* Background elements */}
             <div className="absolute -top-24 -right-24 w-48 h-48 bg-violet-600/20 rounded-full blur-[80px]"></div>
             <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-600/20 rounded-full blur-[80px]"></div>
 
-            <h2 className="text-4xl font-bold mb-6 relative">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-6 relative">
               Ready to <GradientText>Join the Network</GradientText>?
             </h2>
-            <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto relative">
+            <p className="text-lg sm:text-xl text-gray-300 mb-8 sm:mb-10 max-w-2xl mx-auto relative">
               Connect with thousands of developers, share your knowledge, and take your coding skills to the next level.
             </p>
-            <button className="relative px-8 py-4 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-medium hover:shadow-lg hover:shadow-violet-500/25 transition-all flex items-center justify-center gap-2 group mx-auto">
+            <Link
+               href="/forumsz"
+              className="relative px-6 sm:px-8 py-3 sm:py-4 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-medium hover:shadow-lg hover:shadow-violet-500/25 transition-all flex items-center justify-center gap-2 group mx-auto w-fit"
+            >
               Get Started Now
               <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </button>
+            </Link>
           </motion.div>
         </section>
 
         {/* Footer */}
-        <footer className="py-16 px-6 border-t border-white/10">
+        <footer className="py-12 sm:py-16 px-4 sm:px-6 border-t border-white/10">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12">
               <div>
                 <h3 className="text-xl font-bold mb-6 bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
                   ConvoNetX
@@ -793,9 +801,9 @@ export default function Home() {
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                    <Link href="/apps/forums" className="text-gray-400 hover:text-white transition-colors">
                       Forums
-                    </a>
+                    </Link>
                   </li>
                   <li>
                     <a href="#" className="text-gray-400 hover:text-white transition-colors">
