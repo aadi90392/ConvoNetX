@@ -5,10 +5,9 @@ import { useCreateChatClient, Chat, Channel, ChannelHeader, MessageInput, Messag
 import 'stream-chat-react/dist/css/v2/index.css';
 
 const apiKey = 'dz5f4d5kzrue';
-const userId = 'green-wood-7';
-const userName = 'green';
-const userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZ3JlZW4td29vZC03IiwiZXhwIjoxNzQxNjAzNzkyfQ.VfAzFcPRrtd9Ou3yBiN9RKlhcZMBDNDTwgU7RmUDGwA';
-
+const userId = 'soft-mouse-3';
+const userName = 'soft';
+const userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoic29mdC1tb3VzZS0zIiwiZXhwIjoxNzQxNjg4ODM1fQ.XOXcZ60Wn4B36Ndgeo21hGLFjMwE4nck6g3XyeW0qc4';
 const user  = {
   id: userId,
   name: userName,
