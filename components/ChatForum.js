@@ -4,10 +4,10 @@ import { useCreateChatClient, Chat, Channel, ChannelHeader, MessageInput, Messag
 
 import 'stream-chat-react/dist/css/v2/index.css';
 
-const apiKey = 'dz5f4d5kzrue';
-const userId = 'spring-bar-5';
-const userName = 'spring';
-const userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoic3ByaW5nLWJhci01IiwiZXhwIjoxNzQxNzIyNzEwfQ.lDnw_p6JETqTL6Za2CZZVTe1ztSWoBdbdxNcSC1UqlY';
+ const apiKey = 'dz5f4d5kzrue';
+const userId = 'flat-firefly-2';
+const userName = 'flat';
+const userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZmxhdC1maXJlZmx5LTIiLCJleHAiOjE3NDIyMDc2NzR9.pJ0sAu2tci3I8fGSz3ECwJRfA6DySyIIHJC_AeCrTUY';
 const user  = {
   id: userId,
   name: userName,
