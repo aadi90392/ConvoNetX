@@ -16,6 +16,8 @@ import {
   Github,
   Twitter,
   Linkedin,
+  Sun,
+  Moon,
 } from "lucide-react"
 
 // Custom hook for parallax effect
@@ -23,33 +25,36 @@ function useParallax(value, distance) {
   return useTransform(value, [0, 1], [-distance, distance])
 }
 
-// Custom hook for counting animation
+// Custom hook for counting animation with optimized rendering
 function useCountAnimation(end, duration = 2000) {
   const [count, setCount] = useState(0)
   const nodeRef = useRef(null)
-  const inView = useInView(nodeRef)
+  const inView = useInView(nodeRef, { once: true, margin: "-100px" })
+  const animationRef = useRef(null)
+  const startTimeRef = useRef(null)
 
   useEffect(() => {
     if (!inView) return
 
-    let startTime
-    let animationFrame
-
     const startAnimation = (timestamp) => {
-      if (!startTime) startTime = timestamp
-      const progress = timestamp - startTime
+      if (!startTimeRef.current) startTimeRef.current = timestamp
+      const progress = timestamp - startTimeRef.current
       const percentage = Math.min(progress / duration, 1)
 
       setCount(Math.floor(percentage * end))
 
       if (percentage < 1) {
-        animationFrame = requestAnimationFrame(startAnimation)
+        animationRef.current = requestAnimationFrame(startAnimation)
       }
     }
 
-    animationFrame = requestAnimationFrame(startAnimation)
+    animationRef.current = requestAnimationFrame(startAnimation)
 
-    return () => cancelAnimationFrame(animationFrame)
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
   }, [end, duration, inView])
 
   return { count, ref: nodeRef }
@@ -62,7 +67,7 @@ const GradientText = ({ children, className = "" }) => (
   </span>
 )
 
-// Feature card component
+// Feature card component with memoization
 const FeatureCard = ({ icon: Icon, title, description, index }) => {
   const cardRef = useRef(null)
   const isInView = useInView(cardRef, { once: true, margin: "-100px" })
@@ -93,7 +98,7 @@ const FeatureCard = ({ icon: Icon, title, description, index }) => {
   )
 }
 
-// Testimonial card component
+// Testimonial card component with memoization
 const TestimonialCard = ({ name, role, company, quote, avatar, index }) => {
   const cardRef = useRef(null)
   const isInView = useInView(cardRef, { once: true, margin: "-100px" })
@@ -127,7 +132,7 @@ const TestimonialCard = ({ name, role, company, quote, avatar, index }) => {
   )
 }
 
-// Pricing card component
+// Pricing card component with memoization
 const PricingCard = ({ title, price, features, isPopular, index }) => {
   const cardRef = useRef(null)
   const isInView = useInView(cardRef, { once: true, margin: "-100px" })
@@ -184,10 +189,43 @@ const PricingCard = ({ title, price, features, isPopular, index }) => {
 }
 
 export default function Home() {
-  // Scroll animations
+  // Theme state
+  const [isDarkMode, setIsDarkMode] = useState(false)
+
+  // Initialize theme from localStorage on component mount
+  useEffect(() => {
+    // Check if we're in the browser
+    if (typeof window !== "undefined") {
+      // Get saved theme or default to dark
+      const savedTheme = localStorage.getItem("theme") || "dark"
+      setIsDarkMode(savedTheme === "dark")
+
+      // Apply theme class to document
+      if (savedTheme === "dark") {
+        document.documentElement.classList.add("dark")
+      } else {
+        document.documentElement.classList.remove("dark")
+      }
+    }
+  }, [])
+
+  // Toggle theme function
+  const toggleTheme = () => {
+    const newTheme = isDarkMode ? "light" : "dark"
+    setIsDarkMode(!isDarkMode)
+    localStorage.setItem("theme", newTheme)
+
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark")
+    } else {
+      document.documentElement.classList.remove("dark")
+    }
+  }
+
+  // Scroll animations with reduced intensity for better performance
   const { scrollYProgress } = useScroll()
-  const y1 = useParallax(scrollYProgress, 100)
-  const y2 = useParallax(scrollYProgress, -100)
+  const y1 = useParallax(scrollYProgress, 50)
+  const y2 = useParallax(scrollYProgress, -50)
 
   // Stats counters
   const { count: userCount, ref: userCountRef } = useCountAnimation(25000)
@@ -198,53 +236,66 @@ export default function Home() {
   const heroRef = useRef(null)
   const heroInView = useInView(heroRef, { once: true })
 
-  // Animated background
+  // Animated background with performance optimizations
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const mouseMoveThrottleRef = useRef(null)
 
   useEffect(() => {
     const handleMouseMove = (e) => {
-      setMousePosition({
-        x: e.clientX / window.innerWidth,
-        y: e.clientY / window.innerHeight,
-      })
+      if (mouseMoveThrottleRef.current) return
+
+      mouseMoveThrottleRef.current = setTimeout(() => {
+        setMousePosition({
+          x: e.clientX / window.innerWidth,
+          y: e.clientY / window.innerHeight,
+        })
+        mouseMoveThrottleRef.current = null
+      }, 50) // Throttle to 50ms for better performance
     }
 
     window.addEventListener("mousemove", handleMouseMove)
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove)
+      if (mouseMoveThrottleRef.current) {
+        clearTimeout(mouseMoveThrottleRef.current)
+      }
     }
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#0A0118] text-white overflow-hidden font-sans">
-      {/* Animated background gradients */}
+    <div
+      className={`min-h-screen ${isDarkMode ? "dark bg-[#0A0118]" : "bg-gray-50"} text-white overflow-hidden font-sans`}
+    >
+      {/* Animated background gradients - optimized with reduced opacity and complexity */}
       <div className="fixed inset-0 z-0">
         <div
-          className="absolute top-0 left-0 w-[50vw] h-[50vh] bg-violet-600/20 rounded-full blur-[120px] opacity-30 animate-blob"
+          className={`absolute top-0 left-0 w-[50vw] h-[50vh] ${isDarkMode ? "bg-violet-600/20" : "bg-violet-600/10"} rounded-full blur-[120px] opacity-30 animate-blob`}
           style={{
-            transform: `translate(${mousePosition.x * 20}px, ${mousePosition.y * 20}px)`,
-            transition: "transform 0.2s ease-out",
+            transform: `translate(${mousePosition.x * 10}px, ${mousePosition.y * 10}px)`,
+            transition: "transform 0.3s ease-out",
           }}
         ></div>
         <div
-          className="absolute bottom-0 right-0 w-[60vw] h-[60vh] bg-indigo-600/20 rounded-full blur-[120px] opacity-30 animate-blob animation-delay-2000"
+          className={`absolute bottom-0 right-0 w-[60vw] h-[60vh] ${isDarkMode ? "bg-indigo-600/20" : "bg-indigo-600/10"} rounded-full blur-[120px] opacity-30 animate-blob animation-delay-2000`}
           style={{
-            transform: `translate(${-mousePosition.x * 20}px, ${-mousePosition.y * 20}px)`,
-            transition: "transform 0.2s ease-out",
-          }}
-        ></div>
-        <div
-          className="absolute top-1/2 left-1/2 w-[40vw] h-[40vh] bg-blue-600/20 rounded-full blur-[120px] opacity-30 animate-blob animation-delay-4000"
-          style={{
-            transform: `translate(${-mousePosition.x * 30}px, ${-mousePosition.y * 30}px)`,
-            transition: "transform 0.2s ease-out",
+            transform: `translate(${-mousePosition.x * 10}px, ${-mousePosition.y * 10}px)`,
+            transition: "transform 0.3s ease-out",
           }}
         ></div>
       </div>
 
-      {/* Noise texture overlay */}
-      <div className="fixed inset-0 z-10 pointer-events-none opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=')]"></div>
+      {/* Noise texture overlay with reduced opacity */}
+      <div className="fixed inset-0 z-10 pointer-events-none opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=')]"></div>
+
+      {/* Theme toggle button */}
+      <button
+        onClick={toggleTheme}
+        className="fixed bottom-6 right-6 p-3 rounded-full bg-white/10 backdrop-blur-md shadow-lg border border-white/20 z-50 hover:bg-white/20 transition-colors"
+        aria-label="Toggle theme"
+      >
+        {isDarkMode ? <Sun className="h-5 w-5 text-yellow-300" /> : <Moon className="h-5 w-5 text-gray-700" />}
+      </button>
 
       {/* Content */}
       <div className="relative z-20">
@@ -278,14 +329,16 @@ export default function Home() {
                       >
                         <GradientText>ConvoNetX</GradientText>
                         <br />
-                        <span className="text-white">Where Code Meets Community</span>
+                        <span className={`${isDarkMode ? "text-white" : "text-gray-900"}`}>
+                          Where Code Meets Community
+                        </span>
                       </motion.h1>
 
                       <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.2 }}
-                        className="text-lg sm:text-xl text-gray-300 mb-8 max-w-lg"
+                        className={`text-lg sm:text-xl ${isDarkMode ? "text-gray-300" : "text-gray-600"} mb-8 max-w-lg`}
                       >
                         Join a thriving ecosystem where developers connect, collaborate, and build the future through
                         specialized language forums and real-time collaboration.
@@ -298,7 +351,7 @@ export default function Home() {
                         className="flex flex-col sm:flex-row gap-4"
                       >
                         <Link
-                            href="/forums"
+                          href="/forums"
                           className="px-6 sm:px-8 py-3 sm:py-4 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-medium hover:shadow-lg hover:shadow-violet-500/25 transition-all flex items-center justify-center gap-2 group"
                         >
                           Get Started
@@ -307,9 +360,13 @@ export default function Home() {
 
                         <Link
                           href="/chat"
-                          className="px-6 sm:px-8 py-3 sm:py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium transition-all"
+                          className={`px-6 sm:px-8 py-3 sm:py-4 rounded-xl ${
+                            isDarkMode
+                              ? "bg-white/5 hover:bg-white/10 border border-white/10 text-white"
+                              : "bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-900"
+                          } font-medium transition-all`}
                         >
-                         Read More
+                          Read More
                         </Link>
                       </motion.div>
                     </>
@@ -456,53 +513,69 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Floating elements */}
+                {/* Floating elements - reduced for better performance */}
                 <div className="absolute -top-6 -left-6 w-12 h-12 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg animate-float">
                   <Code className="text-white" size={20} />
                 </div>
                 <div className="absolute top-1/4 -right-6 w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-600 flex items-center justify-center shadow-lg animate-float animation-delay-1000">
                   <MessageSquare className="text-white" size={20} />
                 </div>
-                <div className="absolute bottom-1/4 -left-6 w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-600 flex items-center justify-center shadow-lg animate-float animation-delay-2000">
-                  <Users className="text-white" size={20} />
-                </div>
-                <div className="absolute -bottom-6 -right-6 w-12 h-12 rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center shadow-lg animate-float animation-delay-3000">
-                  <Zap className="text-white" size={20} />
-                </div>
               </motion.div>
             </div>
 
-            {/* Trusted by */}
+            {/* Trusted by - Fixed responsiveness */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={heroInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.5 }}
               className="mt-16 sm:mt-24 text-center"
             >
-              <p className="text-sm text-gray-400 mb-6 sm:mb-8">TRUSTED BY DEVELOPERS FROM</p>
-              <div className="flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-16 opacity-70">
+              <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-500"} mb-6 sm:mb-8`}>
+                TRUSTED BY DEVELOPERS FROM
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 sm:gap-8 justify-items-center items-center opacity-70">
                 <div className="h-8 flex items-center">
-                  <svg viewBox="0 0 124 24" fill="currentColor" className="h-5 sm:h-6 text-gray-400">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className={`h-5 sm:h-6 ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}
+                  >
                     <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm0 2c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12 6.5 2 12 2zm-1.9 5v2H7.5v2h2.6v6H7.5v2h7v-2h-2.6V9h2.6V7h-4.4zm7.9 0v12h2V7h-2z" />
                   </svg>
                 </div>
                 <div className="h-8 flex items-center">
-                  <svg viewBox="0 0 124 24" fill="currentColor" className="h-5 sm:h-6 text-gray-400">
-                    <path d="M20.5 2l-5.3 19H17l5.3-19h-1.8zm-9.6 0L5.6 21H3.9L9.1 2h1.8zM22.2 2l-5.3 19h-1.7l5.3-19h1.7zM12.9 2L7.7 21H6l5.3-19h1.6zm9.3 0L16.9 21h-1.8l5.3-19h1.8zM4.7 2l5.3 19H8.2L2.9 2h1.8zm9.6 0l-5.3 19H7.3l5.3-19h1.7zm9.3 0l-5.3 19h-1.7l5.3-19h1.7zM2 2l5.3 19H5.6L.3 2H2z" />
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className={`h-5 sm:h-6 ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}
+                  >
+                    <path d="M20.5 2l-5.3 19H17l5.3-19h-1.8zm-9.6 0L5.6 21H3.9L9.1 2h1.8zM22.2 2l-5.3 19h-1.7l5.3-19h1.7zM12.9 2L7.7 21H6l5.3-19h1.6zm9.3 0L16.9 21h-1.8l5.3-19h1.8zM4.7 2l5.3 19H8.2L2.9 2h1.8zm9.6 0l-5.3 19H7.3l5.3-19h1.7z" />
                   </svg>
                 </div>
                 <div className="h-8 flex items-center">
-                  <svg viewBox="0 0 124 24" fill="currentColor" className="h-4 sm:h-5 text-gray-400">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className={`h-4 sm:h-5 ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}
+                  >
                     <path d="M24 5.6c-.9.4-1.8.7-2.8.8 1-.6 1.8-1.6 2.2-2.7-1 .6-2 1-3.1 1.2-.9-1-2.2-1.6-3.6-1.6-2.7 0-4.9 2.2-4.9 4.9 0 .4 0 .8.1 1.1-4.1-.2-7.7-2.2-10.1-5.1-.4.7-.7 1.6-.7 2.5 0 1.7.9 3.2 2.2 4.1-.8 0-1.6-.2-2.2-.6v.1c0 2.4 1.7 4.4 3.9 4.8-.4.1-.8.2-1.3.2-.3 0-.6 0-.9-.1.6 2 2.4 3.4 4.6 3.4-1.7 1.3-3.8 2.1-6.1 2.1-.4 0-.8 0-1.2-.1 2.2 1.4 4.8 2.2 7.5 2.2 9.1 0 14-7.5 14-14v-.6c1-.7 1.8-1.6 2.5-2.5z" />
                   </svg>
                 </div>
                 <div className="h-8 flex items-center">
-                  <svg viewBox="0 0 124 24" fill="currentColor" className="h-5 sm:h-6 text-gray-400">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className={`h-5 sm:h-6 ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}
+                  >
                     <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm3.6 14.4c0 1.3-1.1 2.4-2.4 2.4H8.4c-1.3 0-2.4-1.1-2.4-2.4V9.6c0-1.3 1.1-2.4 2.4-2.4h4.8c1.3 0 2.4 1.1 2.4 2.4v4.8z" />
                   </svg>
                 </div>
                 <div className="h-8 flex items-center">
-                  <svg viewBox="0 0 124 24" fill="currentColor" className="h-5 sm:h-6 text-gray-400">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className={`h-5 sm:h-6 ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}
+                  >
                     <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.2 14.8L11.5 19V5l5.7 4.2-5.7 4.2 5.7 1.4z" />
                   </svg>
                 </div>
@@ -517,23 +590,29 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
               <div
                 ref={userCountRef}
-                className="p-6 sm:p-8 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/10 text-center"
+                className={`p-6 sm:p-8 rounded-2xl ${isDarkMode ? "bg-white/[0.03]" : "bg-white"} backdrop-blur-sm border ${isDarkMode ? "border-white/10" : "border-gray-200"} text-center`}
               >
-                <div className="text-3xl sm:text-4xl font-bold text-white mb-2">{userCount.toLocaleString()}+</div>
+                <div className={`text-3xl sm:text-4xl font-bold ${isDarkMode ? "text-white" : "text-gray-900"} mb-2`}>
+                  {userCount.toLocaleString()}+
+                </div>
                 <div className="text-gray-400">Active Developers</div>
               </div>
               <div
                 ref={messageCountRef}
-                className="p-6 sm:p-8 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/10 text-center"
+                className={`p-6 sm:p-8 rounded-2xl ${isDarkMode ? "bg-white/[0.03]" : "bg-white"} backdrop-blur-sm border ${isDarkMode ? "border-white/10" : "border-gray-200"} text-center`}
               >
-                <div className="text-3xl sm:text-4xl font-bold text-white mb-2">{messageCount.toLocaleString()}+</div>
+                <div className={`text-3xl sm:text-4xl font-bold ${isDarkMode ? "text-white" : "text-gray-900"} mb-2`}>
+                  {messageCount.toLocaleString()}+
+                </div>
                 <div className="text-gray-400">Messages Exchanged</div>
               </div>
               <div
                 ref={forumCountRef}
-                className="p-6 sm:p-8 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/10 text-center sm:col-span-2 md:col-span-1"
+                className={`p-6 sm:p-8 rounded-2xl ${isDarkMode ? "bg-white/[0.03]" : "bg-white"} backdrop-blur-sm border ${isDarkMode ? "border-white/10" : "border-gray-200"} text-center sm:col-span-2 md:col-span-1`}
               >
-                <div className="text-3xl sm:text-4xl font-bold text-white mb-2">{forumCount}+</div>
+                <div className={`text-3xl sm:text-4xl font-bold ${isDarkMode ? "text-white" : "text-gray-900"} mb-2`}>
+                  {forumCount}+
+                </div>
                 <div className="text-gray-400">Specialized Forums</div>
               </div>
             </div>
@@ -558,7 +637,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
                 viewport={{ once: true, margin: "-100px" }}
-                className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto"
+                className={`text-lg sm:text-xl ${isDarkMode ? "text-gray-400" : "text-gray-500"} max-w-2xl mx-auto`}
               >
                 Everything you need to connect, share knowledge, and build together
               </motion.p>
@@ -609,7 +688,7 @@ export default function Home() {
         <section className="py-16 sm:py-24 px-4 sm:px-6 relative overflow-hidden">
           <motion.div
             style={{ y: y2 }}
-            className="absolute -top-[300px] -right-[300px] w-[600px] h-[600px] bg-violet-600/10 rounded-full blur-[120px] opacity-30"
+            className={`absolute -top-[300px] -right-[300px] w-[600px] h-[600px] ${isDarkMode ? "bg-violet-600/10" : "bg-violet-600/5"} rounded-full blur-[120px] opacity-30`}
           ></motion.div>
 
           <div className="max-w-7xl mx-auto relative">
@@ -628,7 +707,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
                 viewport={{ once: true, margin: "-100px" }}
-                className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto"
+                className={`text-lg sm:text-xl ${isDarkMode ? "text-gray-400" : "text-gray-500"} max-w-2xl mx-auto`}
               >
                 Join thousands of satisfied developers in our community
               </motion.p>
@@ -681,7 +760,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
                 viewport={{ once: true, margin: "-100px" }}
-                className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto"
+                className={`text-lg sm:text-xl ${isDarkMode ? "text-gray-400" : "text-gray-500"} max-w-2xl mx-auto`}
               >
                 Choose the plan that's right for you or your team
               </motion.p>
@@ -741,20 +820,30 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true, margin: "-100px" }}
-            className="max-w-4xl mx-auto text-center p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-violet-900/40 to-indigo-900/40 border border-violet-500/30 backdrop-blur-sm relative overflow-hidden"
+            className={`max-w-4xl mx-auto text-center p-8 sm:p-12 rounded-3xl ${
+              isDarkMode
+                ? "bg-gradient-to-br from-violet-900/40 to-indigo-900/40 border border-violet-500/30"
+                : "bg-gradient-to-br from-violet-900/20 to-indigo-900/20 border border-violet-500/20"
+            } backdrop-blur-sm relative overflow-hidden`}
           >
             {/* Background elements */}
-            <div className="absolute -top-24 -right-24 w-48 h-48 bg-violet-600/20 rounded-full blur-[80px]"></div>
-            <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-600/20 rounded-full blur-[80px]"></div>
+            <div
+              className={`absolute -top-24 -right-24 w-48 h-48 ${isDarkMode ? "bg-violet-600/20" : "bg-violet-600/10"} rounded-full blur-[80px]`}
+            ></div>
+            <div
+              className={`absolute -bottom-24 -left-24 w-48 h-48 ${isDarkMode ? "bg-indigo-600/20" : "bg-indigo-600/10"} rounded-full blur-[80px]`}
+            ></div>
 
             <h2 className="text-3xl sm:text-4xl font-bold mb-6 relative">
               Ready to <GradientText>Join the Network</GradientText>?
             </h2>
-            <p className="text-lg sm:text-xl text-gray-300 mb-8 sm:mb-10 max-w-2xl mx-auto relative">
+            <p
+              className={`text-lg sm:text-xl ${isDarkMode ? "text-gray-300" : "text-gray-600"} mb-8 sm:mb-10 max-w-2xl mx-auto relative`}
+            >
               Connect with thousands of developers, share your knowledge, and take your coding skills to the next level.
             </p>
             <Link
-               href="/forumsz"
+              href="/forums"
               className="relative px-6 sm:px-8 py-3 sm:py-4 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-medium hover:shadow-lg hover:shadow-violet-500/25 transition-all flex items-center justify-center gap-2 group mx-auto w-fit"
             >
               Get Started Now
@@ -764,7 +853,9 @@ export default function Home() {
         </section>
 
         {/* Footer */}
-        <footer className="py-12 sm:py-16 px-4 sm:px-6 border-t border-white/10">
+        <footer
+          className={`py-12 sm:py-16 px-4 sm:px-6 border-t ${isDarkMode ? "border-white/10" : "border-gray-200"}`}
+        >
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12">
               <div>
@@ -788,25 +879,39 @@ export default function Home() {
               </div>
 
               <div>
-                <h4 className="text-sm font-semibold text-gray-300 mb-6">PRODUCT</h4>
+                <h4 className={`text-sm font-semibold ${isDarkMode ? "text-gray-300" : "text-gray-700"} mb-6`}>
+                  PRODUCT
+                </h4>
                 <ul className="space-y-4">
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                    <a
+                      href="#"
+                      className={`text-gray-400 ${isDarkMode ? "hover:text-white" : "hover:text-gray-900"} transition-colors`}
+                    >
                       Features
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                    <a
+                      href="#"
+                      className={`text-gray-400 ${isDarkMode ? "hover:text-white" : "hover:text-gray-900"} transition-colors`}
+                    >
                       Pricing
                     </a>
                   </li>
                   <li>
-                    <Link href="/apps/forums" className="text-gray-400 hover:text-white transition-colors">
+                    <Link
+                      href="/forums"
+                      className={`text-gray-400 ${isDarkMode ? "hover:text-white" : "hover:text-gray-900"} transition-colors`}
+                    >
                       Forums
                     </Link>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                    <a
+                      href="#"
+                      className={`text-gray-400 ${isDarkMode ? "hover:text-white" : "hover:text-gray-900"} transition-colors`}
+                    >
                       Community
                     </a>
                   </li>
@@ -814,25 +919,39 @@ export default function Home() {
               </div>
 
               <div>
-                <h4 className="text-sm font-semibold text-gray-300 mb-6">RESOURCES</h4>
+                <h4 className={`text-sm font-semibold ${isDarkMode ? "text-gray-300" : "text-gray-700"} mb-6`}>
+                  RESOURCES
+                </h4>
                 <ul className="space-y-4">
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                    <a
+                      href="#"
+                      className={`text-gray-400 ${isDarkMode ? "hover:text-white" : "hover:text-gray-900"} transition-colors`}
+                    >
                       Documentation
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                    <a
+                      href="#"
+                      className={`text-gray-400 ${isDarkMode ? "hover:text-white" : "hover:text-gray-900"} transition-colors`}
+                    >
                       Guides
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                    <a
+                      href="#"
+                      className={`text-gray-400 ${isDarkMode ? "hover:text-white" : "hover:text-gray-900"} transition-colors`}
+                    >
                       API Reference
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                    <a
+                      href="#"
+                      className={`text-gray-400 ${isDarkMode ? "hover:text-white" : "hover:text-gray-900"} transition-colors`}
+                    >
                       Blog
                     </a>
                   </li>
@@ -840,25 +959,39 @@ export default function Home() {
               </div>
 
               <div>
-                <h4 className="text-sm font-semibold text-gray-300 mb-6">COMPANY</h4>
+                <h4 className={`text-sm font-semibold ${isDarkMode ? "text-gray-300" : "text-gray-700"} mb-6`}>
+                  COMPANY
+                </h4>
                 <ul className="space-y-4">
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                    <a
+                      href="#"
+                      className={`text-gray-400 ${isDarkMode ? "hover:text-white" : "hover:text-gray-900"} transition-colors`}
+                    >
                       About
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                    <a
+                      href="#"
+                      className={`text-gray-400 ${isDarkMode ? "hover:text-white" : "hover:text-gray-900"} transition-colors`}
+                    >
                       Careers
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                    <a
+                      href="#"
+                      className={`text-gray-400 ${isDarkMode ? "hover:text-white" : "hover:text-gray-900"} transition-colors`}
+                    >
                       Contact
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                    <a
+                      href="#"
+                      className={`text-gray-400 ${isDarkMode ? "hover:text-white" : "hover:text-gray-900"} transition-colors`}
+                    >
                       Legal
                     </a>
                   </li>
@@ -866,16 +999,27 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
+            <div
+              className={`mt-12 pt-8 border-t ${isDarkMode ? "border-white/10" : "border-gray-200"} flex flex-col md:flex-row justify-between items-center`}
+            >
               <p className="text-gray-500 text-sm">© 2025 ConvoNetX. All rights reserved.</p>
               <div className="flex gap-6 mt-4 md:mt-0">
-                <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">
+                <a
+                  href="#"
+                  className={`text-gray-500 ${isDarkMode ? "hover:text-white" : "hover:text-gray-900"} text-sm transition-colors`}
+                >
                   Privacy Policy
                 </a>
-                <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">
+                <a
+                  href="#"
+                  className={`text-gray-500 ${isDarkMode ? "hover:text-white" : "hover:text-gray-900"} text-sm transition-colors`}
+                >
                   Terms of Service
                 </a>
-                <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">
+                <a
+                  href="#"
+                  className={`text-gray-500 ${isDarkMode ? "hover:text-white" : "hover:text-gray-900"} text-sm transition-colors`}
+                >
                   Cookie Policy
                 </a>
               </div>
@@ -935,6 +1079,10 @@ export default function Home() {
         
         .animation-delay-3000 {
           animation-delay: 3s;
+        }
+        
+        .dark {
+          color-scheme: dark;
         }
       `}</style>
     </div>
