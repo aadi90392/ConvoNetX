@@ -5,9 +5,9 @@ import { useCreateChatClient, Chat, Channel, ChannelHeader, MessageInput, Messag
 import 'stream-chat-react/dist/css/v2/index.css';
 
 const apiKey = 'dz5f4d5kzrue';
-const userId = 'dawn-shadow-2';
-const userName = 'dawn';
-const userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGF3bi1zaGFkb3ctMiIsImV4cCI6MTc0MjIxNTU5OH0.dMkEgyRBSd9zVQ5KfICo4-TcN6HDNbGpdR2-Pt9WrzI';
+const userId = 'holy-mountain-4';
+const userName = 'holy';
+const userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiaG9seS1tb3VudGFpbi00IiwiZXhwIjoxNzQ1NTc0MDQ3fQ.-3xrzmGwmkYH4YVOuxrlLuWnky9HKFk16mbDWLHjMME';
 const user  = {
   id: userId,
   name: userName,
